@@ -11,6 +11,10 @@
     <ProjectReference Include="..\TaskManagement.Domain\TaskManagement.Domain.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="MailKit" Version="4.17.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.18" />
@@ -23,18 +27,25 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+ 
     <PackageReference Include="MimeKit" Version="4.17.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Authentication\Extensions\" />
+    <Folder Include="Authentication\Helpers\" />
+    <Folder Include="Email\Extensions\" />
     <Folder Include="Identity\" />
-    <Folder Include="Email\" />
     <Folder Include="Logging\" />
     <Folder Include="Repositories\" />
     <Folder Include="Services\" />
     <Folder Include="Persistence\Configurations\" />
     <Folder Include="Persistence\Migrations\" />
-    <Folder Include="Persistence\Seed\" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="Email\Templates\*.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>
