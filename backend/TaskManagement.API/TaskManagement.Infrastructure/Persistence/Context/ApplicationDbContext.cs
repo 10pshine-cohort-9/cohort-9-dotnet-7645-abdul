@@ -1,19 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using TaskManagement.Infrastructure.Identity.Entities;
 
 namespace TaskManagement.Infrastructure.Persistence.Contexts;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext
+    : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
-    public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(builder);
 
-        // Future Entity Configurations
+        // Future entity configurations will be added here.
+        // builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 }

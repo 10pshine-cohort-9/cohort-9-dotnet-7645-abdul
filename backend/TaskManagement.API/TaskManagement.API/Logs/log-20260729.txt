@@ -1,0 +1,3 @@
+2026-07-29 14:55:08.094 +05:00 [INF] HTTP GET /api/JwtTest/generate responded 200 in 838.2108 ms
+2026-07-29 15:26:45.188 +05:00 [INF] HTTP GET /api/JwtTest/generate responded 200 in 208.7456 ms
+2026-07-29 15:27:05.044 +05:00 [INF] HTTP POST /api/JwtTest/validate responded 200 in 164.8732 ms

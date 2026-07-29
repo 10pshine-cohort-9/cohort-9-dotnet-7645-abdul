@@ -1,6 +1,6 @@
-﻿namespace TaskManagement.API.Settings;
+﻿namespace TaskManagement.Infrastructure.Email.Models;
 
-public class EmailSettings
+public sealed class EmailSettings
 {
     public const string SectionName = "Email";
 
@@ -8,9 +8,13 @@ public class EmailSettings
 
     public int Port { get; set; }
 
+    public string SenderName { get; set; } = string.Empty;
+
+    public string SenderEmail { get; set; } = string.Empty;
+
     public string Username { get; set; } = string.Empty;
 
     public string Password { get; set; } = string.Empty;
 
-    public bool EnableSsl { get; set; }
+    public bool UseSSL { get; set; }
 }
