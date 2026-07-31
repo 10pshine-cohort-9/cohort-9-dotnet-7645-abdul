@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using TaskManagement.Infrastructure.Identity.Entities;
+using TaskManagement.Domain.Identity;
 
 namespace TaskManagement.Infrastructure.Persistence.Seed;
 

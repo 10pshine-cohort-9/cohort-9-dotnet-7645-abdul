@@ -3,12 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManagement.Application.Common.Interfaces;
+using TaskManagement.Domain.Identity;
+using TaskManagement.Infrastructure.Authentication.Configurations;
 using TaskManagement.Infrastructure.Authentication.Services;
 using TaskManagement.Infrastructure.Authentication.Settings;
 using TaskManagement.Infrastructure.Email.Models;
 using TaskManagement.Infrastructure.Email.Services;
-using TaskManagement.Infrastructure.Identity.Entities;
 using TaskManagement.Infrastructure.Persistence.Contexts;
+
+
 
 namespace TaskManagement.Infrastructure.DependencyInjection;
 
@@ -42,7 +45,7 @@ public static class InfrastructureServiceRegistration
           // User
           options.User.RequireUniqueEmail = true;
           options.User.AllowedUserNameCharacters =
-           "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
           // Lockout
           options.Lockout.MaxFailedAccessAttempts = 5;
@@ -52,7 +55,8 @@ public static class InfrastructureServiceRegistration
           options.SignIn.RequireConfirmedEmail = false;
       })
       .AddRoles<ApplicationRole>()
-      .AddEntityFrameworkStores<ApplicationDbContext>();
+      .AddEntityFrameworkStores<ApplicationDbContext>()
+      .AddDefaultTokenProviders();
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<EmailTemplateService>();
@@ -61,8 +65,17 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         services.AddHttpContextAccessor();
-        //.AddDefaultTokenProviders();
+        services.Configure<RefreshTokenSettings>(
+    configuration.GetSection("RefreshTokenSettings"));
 
+        services.AddScoped<ITokenGenerator, TokenGenerator>();
+
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+        services.AddScoped<ISessionService, SessionService>();
+
+        services.AddScoped<IClientInfoService, ClientInfoService>();
+         
 
         return services;
     }

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Infrastructure.Authentication.Settings;
-using TaskManagement.Infrastructure.Identity.Entities;
+using TaskManagement.Domain.Identity;
 
 namespace TaskManagement.Infrastructure.Authentication.Services;
 
