@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace TaskManagement.Infrastructure.Identity.Entities;
+namespace TaskManagement.Domain.Identity;
 
 public class ApplicationUser : IdentityUser
 {
@@ -21,4 +21,10 @@ public class ApplicationUser : IdentityUser
     public DateTime? EmailVerifiedAt { get; set; }
 
     public DateTime? DeletedAt { get; set; }
+
+    public ICollection<RefreshToken> RefreshTokens { get; set; }
+    = new List<RefreshToken>();
+
+    public ICollection<UserSession> UserSessions { get; set; }
+        = new List<UserSession>();
 }
