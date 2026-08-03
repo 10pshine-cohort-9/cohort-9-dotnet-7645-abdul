@@ -1,9 +1,17 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using TaskManagement.Application.Features.Authentication.Commands.Logout;
+using TaskManagement.Application.Features.Authentication.Commands.LogoutAll;
 using TaskManagement.Application.Features.Authentication.Commands.Register;
-using TaskManagement.Application.Features.Authentication.VerifyEmail;
+using TaskManagement.Application.Features.Authentication.Login;
 using TaskManagement.Application.Features.Authentication.ResendVerificationEmail;
+using TaskManagement.Application.Features.Authentication.VerifyEmail;
 namespace TaskManagement.API.Controllers;
+
+using TaskManagement.Application.Features.Authentication.Commands.RevokeSession;
+using TaskManagement.Application.Features.Authentication.Queries.GetSessions;
 
 [ApiController]
 [Route("api/auth")]
@@ -57,5 +65,62 @@ public class AuthController : ControllerBase
             return BadRequest(result);
 
         return Ok(result);
+    }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(LogoutCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpPost("logout-all")]
+    public async Task<IActionResult> LogoutAll()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        var result = await _mediator.Send(new LogoutAllCommand
+        {
+            UserId = userId
+        });
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("sessions")]
+    public async Task<ActionResult<List<SessionDto>>> GetSessions()
+    {
+        var result = await _mediator.Send(new GetSessionsQuery());
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpDelete("sessions/{sessionId:guid}")]
+    public async Task<ActionResult<RevokeSessionResponse>> RevokeSession(Guid sessionId)
+    {
+        return Ok(await _mediator.Send(
+            new RevokeSessionCommand(sessionId)));
     }
 }

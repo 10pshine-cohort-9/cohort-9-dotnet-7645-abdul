@@ -55,6 +55,7 @@ public static class InfrastructureServiceRegistration
           options.SignIn.RequireConfirmedEmail = false;
       })
       .AddRoles<ApplicationRole>()
+      .AddSignInManager<SignInManager<ApplicationUser>>()
       .AddEntityFrameworkStores<ApplicationDbContext>()
       .AddDefaultTokenProviders();
 
