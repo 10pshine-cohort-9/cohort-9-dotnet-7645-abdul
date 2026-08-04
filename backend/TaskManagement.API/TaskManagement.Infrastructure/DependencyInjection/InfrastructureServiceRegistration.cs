@@ -10,6 +10,7 @@ using TaskManagement.Infrastructure.Authentication.Settings;
 using TaskManagement.Infrastructure.Email.Models;
 using TaskManagement.Infrastructure.Email.Services;
 using TaskManagement.Infrastructure.Persistence.Contexts;
+using TaskManagement.Infrastructure.Services;
 
 
 
@@ -31,6 +32,10 @@ public static class InfrastructureServiceRegistration
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection")));
+
+        services.Configure<AppSettings>(
+    configuration.GetSection(AppSettings.SectionName));
+
 
         services
       .AddIdentityCore<ApplicationUser>(options =>
@@ -59,6 +64,7 @@ public static class InfrastructureServiceRegistration
       .AddEntityFrameworkStores<ApplicationDbContext>()
       .AddDefaultTokenProviders();
 
+
         services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<EmailTemplateService>();
         services.AddScoped<IJwtService, JwtService>();
@@ -76,7 +82,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ISessionService, SessionService>();
 
         services.AddScoped<IClientInfoService, ClientInfoService>();
-         
+        services.AddScoped<IApplicationUrlService, ApplicationUrlService>();
 
         return services;
     }

@@ -154,6 +154,23 @@ public class RefreshTokenService : IRefreshTokenService
         return await _context.RefreshTokens
             .FirstOrDefaultAsync(x => x.Id == id);
     }
+    public async Task RevokeAllAsync(string userId, string reason)
+    {
+        var tokens = await _context.RefreshTokens
+            .Where(x =>
+                x.ApplicationUserId == userId &&
+                x.RevokedAt == null &&
+                x.ExpiresAt > DateTime.UtcNow)
+            .ToListAsync();
+
+        foreach (var token in tokens)
+        {
+            token.RevokedAt = DateTime.UtcNow;
+            token.ReasonRevoked = reason;
+        }
+
+        await _context.SaveChangesAsync();
+    }
 }
 
 
