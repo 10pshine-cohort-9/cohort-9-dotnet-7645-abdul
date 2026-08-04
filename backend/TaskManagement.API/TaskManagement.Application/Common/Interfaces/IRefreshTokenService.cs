@@ -27,4 +27,5 @@ public interface IRefreshTokenService
     Task<List<RefreshToken>> GetActiveTokensAsync(string userId);
     Task<RefreshToken?> GetByIdAsync(Guid id);
 
+    Task RevokeAllAsync(string userId, string reason);
 }

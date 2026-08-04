@@ -10,6 +10,7 @@ using TaskManagement.Application.Features.Authentication.ResendVerificationEmail
 using TaskManagement.Application.Features.Authentication.VerifyEmail;
 namespace TaskManagement.API.Controllers;
 
+using TaskManagement.Application.Features.Authentication.Commands.ForgotPassword;
 using TaskManagement.Application.Features.Authentication.Commands.RevokeSession;
 using TaskManagement.Application.Features.Authentication.Queries.GetSessions;
 
@@ -122,5 +123,37 @@ public class AuthController : ControllerBase
     {
         return Ok(await _mediator.Send(
             new RevokeSessionCommand(sessionId)));
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(
+    ForgotPasswordCommand command)
+    {
+        var response =
+            await _mediator.Send(command);
+
+        return Ok(response);
+    }
+    [HttpPost("reset-password")]
+    public async Task<ActionResult<ResetPasswordResponse>>
+    ResetPassword(
+        ResetPasswordCommand command)
+    {
+        var result =
+            await _mediator.Send(command);
+
+        return Ok(result);
+    }
+    [Authorize]
+
+    [HttpPost("change-password")]
+    public async Task<ActionResult<ChangePasswordResponse>>
+    ChangePassword(
+        ChangePasswordCommand command)
+    {
+        var result =
+            await _mediator.Send(command);
+
+        return Ok(result);
     }
 }
