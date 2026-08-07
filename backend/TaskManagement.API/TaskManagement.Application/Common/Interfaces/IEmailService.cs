@@ -13,4 +13,9 @@ public interface IEmailService
         string subject,
         string html,
         CancellationToken cancellationToken = default);
+
+    Task SendPasswordResetEmailAsync(
+        string email,
+        string resetLink,
+        CancellationToken cancellationToken = default);
 }

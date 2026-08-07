@@ -14,4 +14,7 @@ public interface ISessionService
     Task TerminateAllSessionsAsync(string userId);
 
     Task RemoveExpiredSessionsAsync();
+
+    Task UpdateAsync(UserSession session);
+    Task<UserSession?> GetByIdAsync(Guid sessionId);
 }
