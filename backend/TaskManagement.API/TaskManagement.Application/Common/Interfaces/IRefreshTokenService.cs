@@ -1,16 +1,18 @@
-﻿using TaskManagement.Domain.Identity;
+﻿using TaskManagement.Application.Common.Models;
+using TaskManagement.Domain.Identity;
 
 namespace TaskManagement.Application.Common.Interfaces;
 
 public interface IRefreshTokenService
 {
-    Task<RefreshToken> GenerateAsync(
-        ApplicationUser user,
-        string ipAddress);
+    Task<RefreshTokenResult> GenerateAsync(
+     ApplicationUser user,
+     string ipAddress,
+      bool rememberMe = false);
 
     bool Validate(RefreshToken token);
 
-    Task<RefreshToken> RotateAsync(
+    Task<RefreshTokenResult> RotateAsync(
         RefreshToken refreshToken,
         string ipAddress);
 
@@ -20,4 +22,10 @@ public interface IRefreshTokenService
         string reason);
 
     bool IsExpired(RefreshToken refreshToken);
+    Task<RefreshToken?> GetByTokenAsync(string rawToken);
+
+    Task<List<RefreshToken>> GetActiveTokensAsync(string userId);
+    Task<RefreshToken?> GetByIdAsync(Guid id);
+
+    Task RevokeAllAsync(string userId, string reason);
 }

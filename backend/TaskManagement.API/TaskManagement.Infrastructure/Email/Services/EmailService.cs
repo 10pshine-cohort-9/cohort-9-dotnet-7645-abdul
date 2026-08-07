@@ -129,4 +129,25 @@ public sealed class EmailService : IEmailService
             throw;
         }
     }
+    public async Task SendPasswordResetEmailAsync(
+     string email,
+     string resetLink,
+     CancellationToken cancellationToken = default)
+    {
+        var body = $@"
+        <h2>Password Reset</h2>
+
+        <p>Click the button below to reset your password.</p>
+
+        <a href='{resetLink}'>
+            Reset Password
+        </a>";
+
+        await SendEmailAsync(
+            email,
+            "Reset Your Password",
+            body,
+            true,
+            cancellationToken);
+    }
 }
