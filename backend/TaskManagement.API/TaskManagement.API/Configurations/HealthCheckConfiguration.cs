@@ -9,6 +9,7 @@ public static class HealthCheckConfiguration
     public static IServiceCollection AddApplicationHealthChecks(
         this IServiceCollection services)
     {
+         ArgumentNullException.ThrowIfNull(services);
         services.AddHealthChecks()
             .AddDbContextCheck<ApplicationDbContext>(
                 name: "Database");
