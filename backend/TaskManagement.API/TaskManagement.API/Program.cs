@@ -5,7 +5,7 @@ using System.Text.Json;
 using TaskManagement.API.Configurations;
 using TaskManagement.API.DependencyInjection;
 using TaskManagement.API.Extensions;
- 
+using TaskManagement.API.Settings;
 using TaskManagement.Application.DependencyInjection;
 using TaskManagement.Infrastructure.DependencyInjection;
 using TaskManagement.Infrastructure.Persistence;
@@ -35,6 +35,9 @@ builder.Services.AddPresentation();
 //builder.Services.Configure<EmailSettings>(
 //    builder.Configuration.GetSection(EmailSettings.SectionName));
 
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection(EmailSettings.SectionName));
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
