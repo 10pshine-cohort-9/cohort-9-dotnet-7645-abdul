@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskManagement.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using TaskManagement.Infrastructure.Persistence.Contexts;
 namespace TaskManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260809100326_AddTaskDomainAndDatabase")]
+    partial class AddTaskDomainAndDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,7 +141,8 @@ namespace TaskManagement.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -168,7 +172,7 @@ namespace TaskManagement.Infrastructure.Migrations
                     b.Property<string>("AssignedToUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("CategoryId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CompletedAt")
@@ -185,7 +189,8 @@ namespace TaskManagement.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTime?>("DueDate")
                         .HasColumnType("datetime2");
@@ -223,11 +228,7 @@ namespace TaskManagement.Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("AssignedToUserId", "DueDate");
-
-                    b.HasIndex("AssignedToUserId", "Status");
-
-                    b.ToTable("Tasks", (string)null);
+                    b.ToTable("TaskItems", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagement.Domain.Identity.ApplicationRole", b =>
@@ -525,7 +526,8 @@ namespace TaskManagement.Infrastructure.Migrations
                     b.HasOne("TaskManagement.Domain.Entities.TaskCategory", "Category")
                         .WithMany("TaskItems")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("TaskManagement.Domain.Identity.ApplicationUser", "CreatedByUser")
                         .WithMany("CreatedTasks")
