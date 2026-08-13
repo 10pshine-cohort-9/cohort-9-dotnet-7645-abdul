@@ -36,7 +36,6 @@ public class TaskItem
     public DateTime? DeletedAt { get; set; }
 
     // Navigation properties
-
     public TaskCategory? Category { get; set; }
 
     public ApplicationUser? AssignedToUser { get; set; }

@@ -21,10 +21,7 @@ public static class ApplicationServiceRegistration
         services.AddValidatorsFromAssembly(assembly);
 
         // MediatR
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(assembly);
-        });
+        services.AddMediatR(assembly);
 
         return services;
     }
