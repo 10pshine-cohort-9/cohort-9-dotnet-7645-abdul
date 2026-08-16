@@ -15,14 +15,19 @@ const PageLayout = ({ title, children }) => {
       <header className="app-header">
         <div>
           <Link className="brand" to="/">
-            Task Management
+            TaskMaster
           </Link>
         </div>
         <nav>
           <NavLink to="/">Home</NavLink>
+          {isAuthenticated && <NavLink to="/tasks">Tasks</NavLink>}
+          {isAuthenticated && <NavLink to="/tasks/mine">My Tasks</NavLink>}
+          {isAuthenticated && <NavLink to="/tasks/assigned">Assigned</NavLink>}
           {isAuthenticated && <NavLink to="/profile">Profile</NavLink>}
           {isAuthenticated && <NavLink to="/sessions">Sessions</NavLink>}
           {user?.roles?.includes('Admin') && <NavLink to="/users">Users</NavLink>}
+          {user?.roles?.includes('Admin') && <NavLink to="/users/roles">Roles</NavLink>}
+          {user?.roles?.includes('Admin') && <NavLink to="/categories">Categories</NavLink>}
           {!isAuthenticated && <NavLink to="/login">Login</NavLink>}
           {!isAuthenticated && <NavLink to="/register">Register</NavLink>}
           {isAuthenticated && (
@@ -33,11 +38,13 @@ const PageLayout = ({ title, children }) => {
         </nav>
       </header>
       <main className="app-content">
-        <h1>{title}</h1>
+        <div className="page-header">
+          <h1>{title}</h1>
+        </div>
         {children}
       </main>
       <footer className="app-footer">
-        <p>Secure React authentication with JWT, refresh tokens, and role-aware UI.</p>
+        <p>Secure task management powered by JWT auth and role-aware APIs.</p>
       </footer>
     </div>
   );

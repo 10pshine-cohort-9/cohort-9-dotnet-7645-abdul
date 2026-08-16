@@ -89,6 +89,11 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
+  const changePassword = async (payload) => {
+    const response = await api.post('/api/auth/change-password', payload);
+    return response.data;
+  };
+
   const getSessions = async () => {
     const response = await api.get('/api/auth/sessions');
     return response.data;
@@ -123,6 +128,7 @@ export const AuthProvider = ({ children }) => {
       register,
       verifyEmail,
       updateProfile,
+      changePassword,
       getSessions,
       revokeSession,
       refreshSession
