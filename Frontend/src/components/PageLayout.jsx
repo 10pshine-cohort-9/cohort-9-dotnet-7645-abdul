@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const PageLayout = ({ title, children }) => {
+const PageLayout = ({ title, subtitle, children }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -10,42 +10,126 @@ const PageLayout = ({ title, children }) => {
     navigate('/login');
   };
 
+  const navItemClass = ({ isActive }) =>
+    `side-nav-item ${isActive ? 'active' : ''}`;
+
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <Link className="brand" to="/">
-            TaskMaster
-          </Link>
+      <aside className="side-nav">
+        <div className="nav-header">
+          <div className="profile-avatar">
+            <img
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
+              alt="User profile"
+            />
+          </div>
+          <div className="nav-user-meta">
+            <h1>{user ? `${user.firstName || 'Task'} ${user.lastName || 'Master'}` : 'TaskMaster Admin'}</h1>
+            <p>{user?.email || 'admin@taskmaster.com'}</p>
+          </div>
         </div>
-        <nav>
-          <NavLink to="/">Home</NavLink>
-          {isAuthenticated && <NavLink to="/tasks">Tasks</NavLink>}
-          {isAuthenticated && <NavLink to="/tasks/mine">My Tasks</NavLink>}
-          {isAuthenticated && <NavLink to="/tasks/assigned">Assigned</NavLink>}
-          {isAuthenticated && <NavLink to="/profile">Profile</NavLink>}
-          {isAuthenticated && <NavLink to="/sessions">Sessions</NavLink>}
-          {user?.roles?.includes('Admin') && <NavLink to="/users">Users</NavLink>}
-          {user?.roles?.includes('Admin') && <NavLink to="/users/roles">Roles</NavLink>}
-          {user?.roles?.includes('Admin') && <NavLink to="/categories">Categories</NavLink>}
-          {!isAuthenticated && <NavLink to="/login">Login</NavLink>}
-          {!isAuthenticated && <NavLink to="/register">Register</NavLink>}
+
+        <Link className="primary-cta" to="/tasks/new">
+          <span className="material-symbols-outlined">add</span>
+          New Task
+        </Link>
+
+        <nav className="side-nav-links">
+          <NavLink to="/" className={navItemClass}>
+            <span className="material-symbols-outlined">dashboard</span>
+            Dashboard
+          </NavLink>
           {isAuthenticated && (
-            <button className="nav-button" onClick={handleLogout}>
-              Logout
-            </button>
+            <NavLink to="/tasks" className={navItemClass}>
+              <span className="material-symbols-outlined">assignment</span>
+              Tasks
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/tasks/mine" className={navItemClass}>
+              <span className="material-symbols-outlined">fact_check</span>
+              My Tasks
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/tasks/assigned" className={navItemClass}>
+              <span className="material-symbols-outlined">groups</span>
+              Assigned
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/profile" className={navItemClass}>
+              <span className="material-symbols-outlined">person</span>
+              Profile
+            </NavLink>
+          )}
+          {user?.roles?.includes('Admin') && (
+            <NavLink to="/users" className={navItemClass}>
+              <span className="material-symbols-outlined">group</span>
+              Users
+            </NavLink>
+          )}
+          {user?.roles?.includes('Admin') && (
+            <NavLink to="/categories" className={navItemClass}>
+              <span className="material-symbols-outlined">category</span>
+              Categories
+            </NavLink>
+          )}
+          {user?.roles?.includes('Admin') && (
+            <NavLink to="/users/roles" className={navItemClass}>
+              <span className="material-symbols-outlined">security</span>
+              Roles
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/sessions" className={navItemClass}>
+              <span className="material-symbols-outlined">devices</span>
+              Sessions
+            </NavLink>
           )}
         </nav>
-      </header>
-      <main className="app-content">
-        <div className="page-header">
-          <h1>{title}</h1>
+
+        <div className="side-nav-footer">
+          <NavLink to="/help" className="side-nav-item secondary">
+            <span className="material-symbols-outlined">help</span>
+            Help Center
+          </NavLink>
+          {isAuthenticated ? (
+            <button className="logout-link" onClick={handleLogout} type="button">
+              <span className="material-symbols-outlined">logout</span>
+              Logout
+            </button>
+          ) : (
+            <NavLink to="/login" className="side-nav-item secondary">
+              <span className="material-symbols-outlined">login</span>
+              Login
+            </NavLink>
+          )}
         </div>
-        {children}
+      </aside>
+
+      <main className="page-main">
+        <header className="page-header-row">
+          <div>
+            <h2>{title || 'TaskMaster'}</h2>
+            {subtitle && <p>{subtitle}</p>}
+          </div>
+          <div className="top-actions">
+            <button type="button" className="ghost-button">
+              <span className="material-symbols-outlined">download</span>
+              Export
+            </button>
+            {isAuthenticated && (
+              <Link className="primary-button small" to="/tasks/new">
+                <span className="material-symbols-outlined">add</span>
+                New
+              </Link>
+            )}
+          </div>
+        </header>
+
+        <div className="page-content-shell">{children}</div>
       </main>
-      <footer className="app-footer">
-        <p>Secure task management powered by JWT auth and role-aware APIs.</p>
-      </footer>
     </div>
   );
 };

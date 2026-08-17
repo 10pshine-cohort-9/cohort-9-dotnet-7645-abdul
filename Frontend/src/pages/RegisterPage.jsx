@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import PageLayout from '../components/PageLayout';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const RegisterPage = () => {
@@ -48,69 +47,105 @@ const RegisterPage = () => {
   };
 
   return (
-    <PageLayout title="Register">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <label>
-          First name
-          <input
-            type="text"
-            value={firstName}
-            required
-            onChange={(event) => setFirstName(event.target.value)}
-          />
-        </label>
-        <label>
-          Last name
-          <input
-            type="text"
-            value={lastName}
-            required
-            onChange={(event) => setLastName(event.target.value)}
-          />
-        </label>
-        <label>
-          Username
-          <input
-            type="text"
-            value={username}
-            required
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </label>
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            required
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            required
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </label>
-        <label>
-          Confirm Password
-          <input
-            type="password"
-            value={confirmPassword}
-            required
-            onChange={(event) => setConfirmPassword(event.target.value)}
-          />
-        </label>
-        {error && <div className="form-error">{error}</div>}
-        {success && <div className="form-success">{success}</div>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Create account'}
-        </button>
-      </form>
-    </PageLayout>
+    <div className="auth-page-shell">
+      <header className="auth-topbar">
+        <div className="auth-brand">TaskMaster</div>
+      </header>
+
+      <main className="auth-main">
+        <div className="auth-card wide-card">
+          <div className="auth-accent" />
+          <div className="auth-header-copy">
+            <h1>Create Account</h1>
+            <p>Start organizing your team and tasks in minutes.</p>
+          </div>
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="two-col-fields">
+              <div className="field-wrap">
+                <label htmlFor="firstName">First Name</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  required
+                  onChange={(event) => setFirstName(event.target.value)}
+                />
+              </div>
+              <div className="field-wrap">
+                <label htmlFor="lastName">Last Name</label>
+                <input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  required
+                  onChange={(event) => setLastName(event.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="field-wrap">
+              <label htmlFor="username">Username</label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                required
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            </div>
+
+            <div className="field-wrap">
+              <label htmlFor="register-email">Email</label>
+              <input
+                id="register-email"
+                type="email"
+                value={email}
+                required
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+
+            <div className="two-col-fields">
+              <div className="field-wrap">
+                <label htmlFor="register-password">Password</label>
+                <input
+                  id="register-password"
+                  type="password"
+                  value={password}
+                  required
+                  onChange={(event) => setPassword(event.target.value)}
+                />
+              </div>
+              <div className="field-wrap">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  required
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                />
+              </div>
+            </div>
+
+            {error && <div className="form-error">{error}</div>}
+            {success && <div className="form-success">{success}</div>}
+
+            <button type="submit" className="primary-button auth-submit" disabled={loading}>
+              {loading ? 'Creating account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <p>
+              Already have an account?
+              <Link to="/login">Sign in</Link>
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 };
 

@@ -84,21 +84,28 @@ public class CreateTaskCommandHandler
         }
 
         // 4. Validate assigned user if supplied
-        if (!string.IsNullOrWhiteSpace(request.AssignedToUserId))
+        var isAdmin = currentUser.Roles.Contains("Admin", StringComparer.OrdinalIgnoreCase);
+        var targetAssignedUserId = string.IsNullOrWhiteSpace(request.AssignedToUserId)
+            ? null
+            : request.AssignedToUserId;
+
+        if (targetAssignedUserId is not null)
         {
-            var assignedUser = await _userManager.FindByIdAsync(
-                request.AssignedToUserId);
+            if (!isAdmin && !string.Equals(targetAssignedUserId, currentUserId, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new UnauthorizedAccessException("You can only assign tasks to yourself.");
+            }
+
+            var assignedUser = await _userManager.FindByIdAsync(targetAssignedUserId);
 
             if (assignedUser is null)
             {
-                throw new KeyNotFoundException(
-                    "Assigned user not found.");
+                throw new KeyNotFoundException("Assigned user not found.");
             }
 
             if (!assignedUser.IsActive)
             {
-                throw new InvalidOperationException(
-                    "Assigned user is inactive.");
+                throw new InvalidOperationException("Assigned user is inactive.");
             }
         }
 
@@ -119,10 +126,7 @@ public class CreateTaskCommandHandler
 
             CategoryId = request.CategoryId,
 
-            AssignedToUserId = string.IsNullOrWhiteSpace(
-                request.AssignedToUserId)
-                ? null
-                : request.AssignedToUserId,
+            AssignedToUserId = targetAssignedUserId,
 
             CreatedByUserId = currentUserId,
 

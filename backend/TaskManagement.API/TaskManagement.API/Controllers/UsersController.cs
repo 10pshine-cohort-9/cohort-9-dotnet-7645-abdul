@@ -96,8 +96,6 @@ public class UsersController : ControllerBase
             Roles = roles.ToArray()
         });
     }
-
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
@@ -116,20 +114,53 @@ public class UsersController : ControllerBase
             })
             .ToListAsync();
 
-        var userRoleTasks = users.Select(async dto =>
+        foreach (var dto in users)
         {
             var user = await _userManager.FindByIdAsync(dto.Id);
+
             if (user != null)
             {
-                dto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+                dto.Roles = (await _userManager.GetRolesAsync(user))
+                    .ToArray();
             }
-            return dto;
-        });
+        }
 
-        var enrichedUsers = await Task.WhenAll(userRoleTasks);
-
-        return Ok(enrichedUsers);
+        return Ok(users);
     }
+
+    //[Authorize(Roles = "Admin")]
+    //[HttpGet]
+    //public async Task<IActionResult> GetUsers()
+    //{
+    //    var users = await _userManager.Users
+    //        .Select(u => new UserDto
+    //        {
+    //            Id = u.Id,
+    //            Email = u.Email ?? string.Empty,
+    //            Username = u.UserName ?? string.Empty,
+    //            FirstName = u.FirstName,
+    //            LastName = u.LastName,
+    //            EmailConfirmed = u.EmailConfirmed,
+    //            IsActive = u.IsActive,
+    //            CreatedAt = u.CreatedAt,
+    //            Roles = Array.Empty<string>()
+    //        })
+    //        .ToListAsync();
+
+    //    var userRoleTasks = users.Select(async dto =>
+    //    {
+    //        var user = await _userManager.FindByIdAsync(dto.Id);
+    //        if (user != null)
+    //        {
+    //            dto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+    //        }
+    //        return dto;
+    //    });
+
+    //    var enrichedUsers = await Task.WhenAll(userRoleTasks);
+
+    //    return Ok(enrichedUsers);
+    //}
 
     [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
