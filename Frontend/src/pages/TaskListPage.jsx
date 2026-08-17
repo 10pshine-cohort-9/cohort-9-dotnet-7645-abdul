@@ -119,9 +119,10 @@ const TaskListPage = () => {
         <div className="toolbar-group">
           <select name="priority" value={filters.priority} onChange={handleFilterChange}>
             <option value="">All priorities</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+            <option value="1">Low</option>
+            <option value="2">Medium</option>
+            <option value="3">High</option>
+            <option value="4">Critical</option>
           </select>
         </div>
         <div className="toolbar-group">

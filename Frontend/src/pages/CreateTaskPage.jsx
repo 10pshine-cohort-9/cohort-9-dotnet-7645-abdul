@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/httpClient';
 import PageLayout from '../components/PageLayout';
+import { useAuth } from '../contexts/AuthContext';
 
 const CreateTaskPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('Admin');
   const [categories, setCategories] = useState([]);
+  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -27,13 +31,28 @@ const CreateTaskPage = () => {
       }
     };
 
-    loadCategories();
-  }, []);
+    const loadUsers = async () => {
+      if (!isAdmin) return;
+      try {
+        const response = await api.get('/api/users');
+        setUsers(response.data || []);
+      } catch {
+        setUsers([]);
+      }
+    };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((previous) => ({ ...previous, [name]: value }));
-  };
+    loadCategories();
+    loadUsers();
+  }, [isAdmin]);
+
+ const handleChange = (event) => {
+  const { name, value } = event.target;
+
+  setForm((previous) => ({
+    ...previous,
+    [name]: name === "priority" ? Number(value) : value,
+  }));
+};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -46,7 +65,7 @@ const CreateTaskPage = () => {
         description: form.description,
         priority: form.priority,
         categoryId: form.categoryId || null,
-        assignedToUserId: form.assignedToUserId || null,
+        assignedToUserId: form.assignedToUserId || (isAdmin ? null : user?.id || null),
         dueDate: form.dueDate || null
       };
 
@@ -86,14 +105,15 @@ const CreateTaskPage = () => {
         </label>
 
         <div className="two-column-grid">
-          <label>
-            Priority
-            <select name="priority" value={form.priority} onChange={handleChange}>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-          </label>
+         <label>
+  Priority
+  <select name="priority" value={form.priority} onChange={handleChange}>
+    <option value={1}>Low</option>
+    <option value={2}>Medium</option>
+    <option value={3}>High</option>
+    <option value={4}>Critical</option>
+  </select>
+</label>
 
           <label>
             Category
@@ -110,14 +130,25 @@ const CreateTaskPage = () => {
 
         <div className="two-column-grid">
           <label>
-            Assign to user ID
-            <input
-              type="text"
-              name="assignedToUserId"
-              value={form.assignedToUserId}
-              onChange={handleChange}
-              placeholder="Optional"
-            />
+            {isAdmin ? 'Assign to user' : 'Assigned to'}
+            {isAdmin ? (
+              <select name="assignedToUserId" value={form.assignedToUserId} onChange={handleChange}>
+                <option value="">Unassigned</option>
+                {users.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.firstName} {member.lastName} ({member.email})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                name="assignedToUserId"
+                value={user?.id || ''}
+                readOnly
+                placeholder="Your account"
+              />
+            )}
           </label>
 
           <label>
