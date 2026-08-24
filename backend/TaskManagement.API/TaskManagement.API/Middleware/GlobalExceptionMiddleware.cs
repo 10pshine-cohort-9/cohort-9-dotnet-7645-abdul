@@ -77,13 +77,38 @@ public class GlobalExceptionMiddleware
                 throw;
             }
 
-            await HandleException(
-                context,
-                HttpStatusCode.InternalServerError,
-                "An unexpected error occurred.");
-        }
+    try
+    {
+        await _next(context);
     }
+    catch (ValidationException ex)
+    {
+        await HandleValidationException(context, ex);
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        await HandleException(
+            context,
+            HttpStatusCode.Unauthorized,
+            ex.Message);
+    }
+    catch (KeyNotFoundException ex)
+    {
+        await HandleException(
+            context,
+            HttpStatusCode.NotFound,
+            ex.Message);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Unhandled exception occurred.");
 
+        await HandleException(
+            context,
+            HttpStatusCode.InternalServerError,
+            "An unexpected error occurred.");
+    }
+}
     private static async Task HandleValidationException(
         HttpContext context,
         ValidationException exception)
@@ -92,14 +117,15 @@ public class GlobalExceptionMiddleware
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
         var response = new ValidationErrorResponse
-        {
-            Message = "Validation Failed",
-            Errors = exception.Errors
-                .GroupBy(x => x.PropertyName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(e => e.ErrorMessage).ToArray())
-        };
+{
+    StatusCode = StatusCodes.Status400BadRequest,
+    Message = "Validation Failed",
+    Errors = exception.Errors
+        .GroupBy(x => x.PropertyName)
+        .ToDictionary(
+            g => g.Key,
+            g => g.Select(e => e.ErrorMessage).ToArray())
+};
 
         await context.Response.WriteAsync(
             JsonSerializer.Serialize(response));

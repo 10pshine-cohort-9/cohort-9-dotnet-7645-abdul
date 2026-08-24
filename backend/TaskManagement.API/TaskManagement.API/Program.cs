@@ -5,11 +5,13 @@ using System.Text.Json;
 using TaskManagement.API.Configurations;
 using TaskManagement.API.DependencyInjection;
 using TaskManagement.API.Extensions;
-using TaskManagement.API.Settings;
+ 
 using TaskManagement.Application.DependencyInjection;
 using TaskManagement.Infrastructure.DependencyInjection;
 using TaskManagement.Infrastructure.Persistence;
 using TaskManagement.Infrastructure.Persistence.Contexts;
+using TaskManagement.Infrastructure.Persistence.Seed;
+using TaskManagement.Infrastructure.Email.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,14 +25,16 @@ builder.Services.AddApplicationHealthChecks();
 // Dependency Injection
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthorization();
 builder.Services.AddPresentation();
 //setting 
-builder.Services.Configure<JwtSettings>(
-    builder.Configuration.GetSection(JwtSettings.SectionName));
+//builder.Services.Configure<JwtSettings>(
+//    builder.Configuration.GetSection(JwtSettings.SectionName));
 
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection(EmailSettings.SectionName));
- 
+//builder.Services.Configure<EmailSettings>(
+//    builder.Configuration.GetSection(EmailSettings.SectionName));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,13 +47,19 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+}
 app.UseGlobalExceptionMiddleware();
 app.UseHttpsRedirection();
-
+app.UseSerilogRequestLogging();
+app.UseRouting();
 app.UseCors("AllowReactApp");
 
- 
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 
@@ -69,7 +79,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions
             {
                 Name = x.Key,
                 Status = x.Value.Status.ToString(),
-                Error = x.Value.Exception?.Message
+                
             })
         };
 
