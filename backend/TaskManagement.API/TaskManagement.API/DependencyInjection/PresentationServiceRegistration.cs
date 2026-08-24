@@ -10,6 +10,7 @@ public static class PresentationServiceRegistration
     public static IServiceCollection AddPresentation(
       this IServiceCollection services)
     {
+         ArgumentNullException.ThrowIfNull(services);
         services.AddControllers();
 
         services.AddFluentValidationAutoValidation();

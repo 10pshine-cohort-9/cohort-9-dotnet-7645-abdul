@@ -14,13 +14,68 @@ public class GlobalExceptionMiddleware
         RequestDelegate next,
         ILogger<GlobalExceptionMiddleware> logger)
     {
+        ArgumentNullException.ThrowIfNull(next);
+        ArgumentNullException.ThrowIfNull(logger);
+
         _next = next;
         _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
-{
-    ArgumentNullException.ThrowIfNull(context);
+    {
+        try
+        {
+            await _next(context);
+        }
+        catch (ValidationException ex)
+        {
+            if (context.Response.HasStarted)
+            {
+                _logger.LogWarning(ex,
+                    "Cannot write validation error response because the response has already started.");
+                throw;
+            }
+
+            await HandleValidationException(context, ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            if (context.Response.HasStarted)
+            {
+                _logger.LogWarning(ex,
+                    "Cannot write unauthorized response because the response has already started.");
+                throw;
+            }
+
+            await HandleException(
+                context,
+                HttpStatusCode.Unauthorized,
+                ex.Message);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            if (context.Response.HasStarted)
+            {
+                _logger.LogWarning(ex,
+                    "Cannot write not found response because the response has already started.");
+                throw;
+            }
+
+            await HandleException(
+                context,
+                HttpStatusCode.NotFound,
+                ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unhandled exception occurred.");
+
+            if (context.Response.HasStarted)
+            {
+                _logger.LogWarning(
+                    "Cannot write error response because the response has already started.");
+                throw;
+            }
 
     try
     {
